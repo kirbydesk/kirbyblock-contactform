@@ -1,0 +1,162 @@
+/* DO NOT MODIFY THIS FILE - Override in site/patches/css/kirbyblock-contactform/_styles.css */
+
+/* Field colours per theme (Project Wizard → Contact form › Design) */
+section[data-block="contactform"] {
+	--pw-cf-background: var(--pwcontactform-field-background);
+	--pw-cf-border: var(--pwcontactform-field-border);
+	--pw-cf-text: var(--pwcontactform-field-text);
+	--pw-cf-focus: var(--pwcontactform-field-focus);
+}
+section[data-block="contactform"][data-style="variant"] {
+	--pw-cf-background: var(--pwcontactform-field-background-variant);
+	--pw-cf-border: var(--pwcontactform-field-border-variant);
+	--pw-cf-text: var(--pwcontactform-field-text-variant);
+	--pw-cf-focus: var(--pwcontactform-field-focus-variant);
+}
+section[data-block="contactform"][data-style="variant2"] {
+	--pw-cf-background: var(--pwcontactform-field-background-variant2);
+	--pw-cf-border: var(--pwcontactform-field-border-variant2);
+	--pw-cf-text: var(--pwcontactform-field-text-variant2);
+	--pw-cf-focus: var(--pwcontactform-field-focus-variant2);
+}
+section[data-block="contactform"][data-style="variant3"] {
+	--pw-cf-background: var(--pwcontactform-field-background-variant3);
+	--pw-cf-border: var(--pwcontactform-field-border-variant3);
+	--pw-cf-text: var(--pwcontactform-field-text-variant3);
+	--pw-cf-focus: var(--pwcontactform-field-focus-variant3);
+}
+
+section[data-block="contactform"] {
+	/* -------------- the gap to the intro --------------*/
+	:is([data-field="tagline"], [data-field="heading"], [data-field="textarea"], [data-field="writer"], [data-field="markdown"]) + [data-block="items"] {
+		padding-top: var(--pwcontactform-item-text-gap);
+	}
+
+	/* -------------- the form: two columns, a full field over both --------------*/
+	form[data-contactform] {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--pwcontactform-field-gap, 1rem);
+		margin: 0;
+	}
+	@media (min-width: 768px) {
+		form[data-contactform] {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: calc(var(--pwcontactform-field-gap, 1rem) * 1.5);
+		}
+		[data-contactform-field][data-width="full"],
+		[data-contactform-consent],
+		[data-contactform-submit] {
+			grid-column: 1 / -1;
+		}
+	}
+
+	[data-contactform-field] {
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+		min-width: 0;
+
+		label {
+			font-weight: 600;
+			font-size: 0.875em;
+		}
+		input,
+		textarea {
+			width: 100%;
+			box-sizing: border-box;
+			font: inherit;
+			color: var(--pw-cf-text);
+			background-color: var(--pw-cf-background);
+			border: var(--pwcontactform-field-border-width, 1px) solid var(--pw-cf-border);
+			border-radius: var(--pwcontactform-field-radius, 0.375rem);
+			padding: var(--pwcontactform-field-padding, 0.75rem);
+			outline: none;
+			transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+			&:focus {
+				border-color: var(--pw-cf-focus);
+				box-shadow: 0 0 0 3px color-mix(in srgb, var(--pw-cf-focus) 25%, transparent);
+			}
+		}
+		textarea {
+			min-height: 9rem;
+			resize: vertical;
+		}
+	}
+
+	/* required: the asterisk, an error below the field */
+	label span[aria-hidden] {
+		color: var(--pw-cf-focus);
+	}
+	[data-invalid] :is(input:not([type="checkbox"]), textarea) {
+		border-color: #c1121f;
+	}
+	[data-contactform-error] {
+		font-size: 0.8125em;
+		color: #c1121f;
+	}
+
+	/* the consent with its link to the privacy page */
+	[data-contactform-consent] {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		column-gap: 0.625rem;
+		align-items: start;
+		font-size: 0.875em;
+
+		input {
+			margin: 0.2em 0 0;
+			width: 1.05em;
+			height: 1.05em;
+			accent-color: var(--pw-cf-focus);
+		}
+		a {
+			color: inherit;
+			text-decoration: underline;
+		}
+		[data-contactform-error] {
+			grid-column: 2;
+		}
+	}
+
+	[data-contactform-submit] {
+		margin-top: 0.25rem;
+	}
+
+	/* the trap for bots: out of sight, not only invisible */
+	[data-contactform-trap] {
+		position: absolute;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+
+	/* after sending: the thanks, or the note when sending failed */
+	[data-contactform-message] {
+		border-radius: var(--pwcontactform-field-radius, 0.375rem);
+		padding: 1.25rem 1.5rem;
+
+		p {
+			margin: 0;
+		}
+		p + p {
+			margin-top: 0.5em;
+		}
+	}
+	[data-contactform-message="sent"] {
+		background: color-mix(in srgb, #1a7f37 8%, transparent);
+		border: 1px solid color-mix(in srgb, #1a7f37 30%, transparent);
+	}
+	[data-contactform-message="failed"] {
+		margin-bottom: var(--pwcontactform-field-gap, 1rem);
+		background: color-mix(in srgb, #c1121f 8%, transparent);
+		border: 1px solid color-mix(in srgb, #c1121f 30%, transparent);
+
+		a {
+			color: inherit;
+			text-decoration: underline;
+		}
+	}
+}

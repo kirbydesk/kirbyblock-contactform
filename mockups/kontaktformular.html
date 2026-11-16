@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kontaktformular</title>
+<style>
+  :root { --dim: #6b6f76; --line: #e8e8e8; --labelbg: #fafafa; --mono: ui-monospace, Menlo, monospace; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #2a2a2e; color: #16171a; padding: 24px 16px 60px; }
+  h1 { font-size: 18px; color: #f2f2f4; font-weight: 600; }
+  .lead { color: #a8a8ae; margin: 4px 0 12px; max-width: 1240px; }
+  .switch { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .switch button { border: 0; background: #3a3a40; color: #f2f2f4; font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+  .switch button.on { background: #0a84ff; }
+  .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 8px; }
+  @media (max-width: 960px) { .wrap { grid-template-columns: 1fr; } }
+  .box { background: #efefef; border-radius: 10px; padding: 18px 22px 24px; min-width: 0; }
+  .boxt { font-size: 12px; color: var(--dim); margin-bottom: 10px; }
+  .dtabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+  .dtabs span { padding: 5px 10px; font-size: 13px; color: var(--dim); cursor: pointer; }
+  .dtabs span.on { color: #16171a; border-bottom: 2px solid #16171a; font-weight: 500; }
+  .kf { margin-bottom: 16px; }
+  .kf > label, .kf .l { display: block; font-weight: 500; font-size: 13px; margin-bottom: 6px; }
+  .kf input, .kf textarea { width: 100%; border: 0; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08); padding: 7px 10px; font: inherit; background: #fff; }
+  .kf textarea { min-height: 60px; }
+  .help { font-size: 12px; color: var(--dim); margin-top: 5px; line-height: 1.45; }
+  .tbl { background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08); width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th { text-align: left; font: 11px var(--mono); color: var(--dim); font-weight: 400; padding: 7px 12px; }
+  .tbl td { padding: 6px 12px; border-top: 1px solid var(--line); }
+  .sw { display: inline-block; width: 30px; height: 18px; border-radius: 9px; background: #ccc; position: relative; vertical-align: middle; cursor: pointer; }
+  .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: .15s; }
+  .sw.on { background: #16171a; } .sw.on::after { left: 14px; }
+  .sw.fix { opacity: .45; cursor: default; }
+  .grip { color: #aaa; cursor: grab; width: 18px; letter-spacing: -2px; user-select: none; }
+  tr[draggable] { background: #fff; }
+  .tog.mini { box-shadow: none; border: 1px solid #e3e3e3; }
+  .tog.mini span { padding: 1px 8px; font-size: 12px; }
+  .warn { background: #fdf2f2; border: 1px solid #f3c9c9; color: #a61b1b; border-radius: 4px; padding: 8px 10px; font-size: 12.5px; margin-top: 8px; }
+  .mac { background: #f6f6f6; border-radius: 10px; border: 1px solid #ddd; padding: 16px; font: 13px -apple-system, sans-serif; }
+  .mach { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+  .mach b { display: block; font-size: 14px; } .mach small { color: #6e6e73; font-size: 12px; }
+  .macic { width: 40px; height: 40px; border-radius: 9px; background: #0a84ff; color: #fff; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .macg { background: #fff; border-radius: 8px; border: 1px solid #e5e5e5; margin-bottom: 10px; }
+  .macr { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; gap: 10px; }
+  .macr + .macr { border-top: 1px solid #eee; }
+  .mi { color: #333; background: #fff; border: 1px solid #d6d6d6; border-radius: 5px; padding: 2px 8px; min-width: 190px; text-align: right; }
+  .mp { border: 1px solid #d6d6d6; border-radius: 5px; padding: 2px 8px; }
+  .mact { color: #6e6e73; font-size: 12px; margin: 4px 2px 10px; }
+  .macb { display: flex; justify-content: flex-end; gap: 8px; }
+  .macb button { border: 1px solid #ccc; background: #fff; border-radius: 6px; padding: 4px 12px; font: inherit; cursor: pointer; }
+  .macb button.pri { background: #0a84ff; color: #fff; border-color: #0a84ff; }
+  .ti { border: 0; outline: none; font: 13px var(--mono); width: 100%; background: transparent; }
+  .lock { font-size: 12.5px; color: #333; } .lnk { color: #16171a; font-size: 12.5px; }
+  .acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+  .kb { border: 0; background: #e2e2e4; border-radius: 4px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .kb.pri { background: #16171a; color: #fff; } .kb:disabled { opacity: .4; cursor: default; }
+  .new { outline: 2px dashed #ff9f0a; outline-offset: 6px; border-radius: 4px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  .tog { display: inline-flex; background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08); padding: 2px; }
+  .tog span { padding: 4px 12px; font-size: 13px; border-radius: 3px; cursor: pointer; }
+  .tog span.on { background: #16171a; color: #fff; }
+  /* website */
+  .site { background: #fff; border-radius: 10px; padding: 34px 32px 38px; min-width: 0; }
+  .site .tl { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #e30613; font-weight: 600; }
+  .site h2 { font-size: 28px; margin: 4px 0 8px; }
+  .site .intro { color: #444; margin-bottom: 22px; }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+  .ff { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .ff.full { grid-column: 1 / -1; }
+  .ff label { font-size: 13px; font-weight: 600; }
+  .ff label i { font-style: normal; color: #e30613; }
+  .ff input, .ff textarea { border: 1px solid #d4d4d8; border-radius: 6px; padding: 10px 12px; font: inherit; background: #fafafa; outline: none; width: 100%; }
+  .ff input:focus, .ff textarea:focus { border-color: #e30613; box-shadow: 0 0 0 3px rgba(227,6,19,.15); background: #fff; }
+  .ff textarea { min-height: 120px; resize: vertical; }
+  .ff .err { color: #c1121f; font-size: 12px; }
+  .ff.bad input, .ff.bad textarea { border-color: #c1121f; }
+  .consent { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #333; }
+  .consent input { margin-top: 3px; }
+  .consent a { color: #e30613; }
+  .btn { grid-column: 1 / -1; justify-self: start; background: #e30613; color: #fff; border: 0; border-radius: 999px; padding: 11px 26px; font: inherit; font-weight: 600; cursor: pointer; }
+  .thanks { border-radius: 8px; background: #f3f8f3; border: 1px solid #cfe6cf; padding: 22px; }
+  .thanks b { display: block; font-size: 17px; margin-bottom: 4px; }
+  /* inbox */
+  .inbox { background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .msg { display: grid; grid-template-columns: 130px 1fr auto; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: 13px; cursor: pointer; }
+  .msg:first-child { border-top: 0; }
+  .msg small { color: var(--dim); }
+  .msg.unread b { font-weight: 700; }
+  .notes { max-width: 1240px; color: #ff9f0a; font-size: 12.5px; margin-top: 12px; }
+  .notes p + p { margin-top: 6px; }
+</style>
+</head>
+<body>
+<h1>Block „Kontaktformular“</h1>
+<p class="lead">Links das Panel, rechts die Website. Oben die Stelle im Panel wählen; die Website reagiert auf die Felder. Erläuterungen in Orange gehören nicht zum Plugin.</p>
+<div class="switch" id="view"></div>
+<div class="wrap"><div class="box" id="left"></div><div class="site" id="right"></div></div>
+<div class="notes" id="notes"></div>
+<script>
+  const F = [
+    ['name', 'Name', true, true, false],
+    ['email', 'E-Mail', true, true, true],
+    ['phone', 'Telefon', true, false, false],
+    ['company', 'Firma', false, false, false],
+    ['subject', 'Betreff', false, false, false],
+    ['message', 'Nachricht', true, true, false],
+  ]; // key, label, shown, required, fixed (always shown + required)
+  const S = { view: 'block', tab: 'form', wtab: 'mail', sent: false, errors: false, failed: false, confirm: true, smtp: true, tested: false };
+  const fields = F.map(([k, l, s, r, fix]) => ({ k, l, s, r, fix, w: ['message', 'subject'].includes(k) ? 'full' : 'half' }));
+  let dragFrom = null;
+  const sw = (on, attrs, fix) => '<span class="sw' + (on ? ' on' : '') + (fix ? ' fix' : '') + '" ' + attrs + '></span>';
+  function block() {
+    const tabs = [['content', 'Inhalt'], ['form', 'Formular'], ['mail', 'Versand'], ['layout', 'Layout'], ['style', 'Stil']];
+    let h = '<div class="boxt">Panel › Seite › Block „Kontaktformular“</div><div class="dtabs">' + tabs.map(([k, t]) => '<span data-tab="' + k + '" class="' + (S.tab === k ? 'on' : '') + '">' + t + '</span>').join('') + '</div>';
+    if (S.tab === 'content') h += '<div class="kf"><label>Tagline</label><input value="Kontakt"></div><div class="kf"><label>Überschrift</label><input value="Sprechen Sie mit uns"></div><div class="kf"><label>Text</label><textarea>Wir melden uns innerhalb eines Werktags.</textarea></div>';
+    if (S.tab === 'form') h += '<div class="kf new"><span class="l">Felder</span><table class="tbl"><tr><th></th><th>Feld</th><th>Anzeigen</th><th>Pflichtfeld</th><th>Breite</th></tr>' +
+      fields.map((f, i) => '<tr draggable="true" data-row="' + i + '"><td class="grip">⋮⋮</td><td>' + f.l + '</td><td>' + sw(f.s, 'data-show="' + i + '"', f.fix) + '</td><td>' + sw(f.r && f.s, 'data-req="' + i + '"', f.fix || !f.s) + '</td><td><span class="tog mini">' + [['half', 'Halb'], ['full', 'Ganz']].map(([v, t]) => '<span data-w="' + i + '" data-wv="' + v + '" class="' + (f.w === v ? 'on' : '') + '">' + t + '</span>').join('') + '</span></td></tr>').join('') +
+      '</table><p class="help">Zum Sortieren am Griff ziehen. Zwei halbe Felder hintereinander stehen nebeneinander, auf dem Handy immer untereinander. E-Mail ist immer dabei und Pflicht – sonst kann niemand antworten.</p></div>' +
+      '<div class="kf"><label>Datenschutz</label><input value="→ Datenschutzerklärung (Seite)"><p class="help">Die Seite für den Link in der Zustimmung unter dem Formular. Die Zustimmung ist immer Pflicht.</p></div>' +
+      '<div class="kf"><label>Knopf</label><input value="Nachricht senden"></div>' +
+      '<div class="kf"><label>Nach dem Absenden</label><textarea>Vielen Dank! Ihre Nachricht ist angekommen. Wir melden uns innerhalb eines Werktags.</textarea><p class="help">Erscheint statt des Formulars.</p></div>';
+    if (S.tab === 'mail') h += '<div class="kf"><label>Empfänger</label><input placeholder="kontakt@encom-lab.de (aus dem Project Wizard)"><p class="help">Leer lassen: die Adresse aus dem Project Wizard. Mehrere Adressen mit Komma.</p></div>' + (S.smtp ? '' : '<div class="warn">Kein Mailserver eingerichtet – das Formular kann nicht senden. Im Project Wizard: Blöcke › Kontaktformular › Versand.</div>') +
+      '<div class="kf"><label>Betreff der E-Mail</label><input value="Anfrage über encom-lab.de: {{ subject }}"></div>' +
+      '<div class="kf"><span class="l">Bestätigung an Absender ' + sw(S.confirm, 'data-x="confirm"') + '</span>' + (S.confirm ? '<textarea>Hallo {{ name }}, danke für Ihre Nachricht – wir melden uns in Kürze.</textarea><p class="help">Der Absender bekommt diesen Text und eine Kopie seiner Nachricht.</p>' : '') + '</div>';
+    if (S.tab === 'layout') h += '<p class="help">Wie bei allen Blöcken: Innenabstände, Ecken, Raster. Dazu „Spalten“: Felder nebeneinander (Name | E-Mail) oder alle untereinander.</p>';
+    if (S.tab === 'style') h += '<p class="help">Wie bei allen Blöcken: Farbvariante. Felder, Knopf und Zustimmung übernehmen die Farben der Variante.</p>';
+    return h;
+  }
+  function wizard() {
+    const tabs = [['design', 'Gestaltung'], ['mail', 'Versand'], ['defaults', 'Startwerte']];
+    let h = '<div class="boxt">Project Wizard › Blöcke › Kontaktformular</div><div class="dtabs">' + tabs.map(([k, t]) => '<span data-wtab="' + k + '" class="' + (S.wtab === k ? 'on' : '') + '">' + t + '</span>').join('') + '</div>';
+    if (S.wtab === 'design') return h + '<div class="kf"><span class="l">Felder</span><table class="tbl"><tr><td style="width:45%">Hintergrund</td><td>■ #FAFAFA</td></tr><tr><td>Rahmen</td><td>■ #D4D4D8 · 1px</td></tr><tr><td>Ecken</td><td>6px</td></tr><tr><td>Fokus</td><td>■ Akzentfarbe der Variante</td></tr><tr><td>Abstand zwischen Feldern</td><td>1rem</td></tr></table><p class="help">Gestaltung der Eingabefelder für alle Kontaktformulare. Der Knopf nimmt den Button-Stil der Variante.</p></div>';
+    if (S.wtab === 'defaults') return h + '<p class="help">Wie bei allen Blöcken: welche Felder ein neuer Block zeigt, Texte für Knopf und Dankesmeldung.</p>';
+    const row = (l, v) => '<tr><td style="width:40%">' + l + '</td><td>' + v + '</td></tr>';
+    const inp = (v, ph) => '<input class="ti" value="' + v + '" placeholder="' + (ph || '') + '">';
+    return h + '<div class="kf"><span class="l">Empfänger</span><table class="tbl">' + row('E-Mail', inp('kontakt@encom-lab.de')) + '</table><p class="help">Wohin die Anfragen gehen. Mehrere Adressen mit Komma. Ein Block kann eine eigene Adresse haben.</p></div>' +
+      '<div class="kf new"><span class="l">Mailserver (SMTP)</span><table class="tbl">' +
+        row('Server', inp(S.smtp ? 'smtp.ionos.de' : '', 'z. B. smtp.ionos.de')) +
+        row('Port', inp(S.smtp ? '587' : '', '587')) +
+        row('Verschlüsselung', '<span class="tog mini"><span class="on">STARTTLS</span><span>SSL/TLS</span></span>') +
+        row('Benutzername', inp(S.smtp ? 'website@encom-lab.de' : '', 'meist die E-Mail-Adresse')) +
+        row('Passwort', S.smtp ? '<span class="lock">🔒 verschlüsselt gespeichert</span> <a href="#" class="lnk">Ändern …</a>' : inp('', '')) +
+        row('Absender', inp(S.smtp ? 'website@encom-lab.de' : '', 'eine Adresse dieses Postfachs')) +
+        row('Status', S.smtp ? (S.tested ? '<span style="color:#1a7f37">● Test-Mail an christian@… gesendet</span>' : '<span style="color:#1a7f37">● Eingerichtet</span>') : '<span style="color:#c1121f">● Nicht eingerichtet</span>') +
+      '</table><div class="acts"><button class="kb" data-x="smtp">' + (S.smtp ? 'Entfernen' : 'Sichern') + '</button><button class="kb pri" data-test' + (S.smtp ? '' : ' disabled') + '>Test-Mail senden</button></div>' +
+      '<p class="help">Die Zugangsdaten des Postfachs, über das die Website Mails verschickt (z. B. bei IONOS). Das Passwort wird verschlüsselt gespeichert – lesbar nur zusammen mit dem Code der Website. Antworten gehen an den Besucher.</p></div>';
+  }
+  function website() {
+    if (S.failed) return '<div class="tl">Kontakt</div><h2>Sprechen Sie mit uns</h2><div class="thanks" style="background:#fdf2f2;border-color:#f3c9c9"><b>Die Nachricht konnte nicht gesendet werden.</b>Bitte schreiben Sie uns direkt an <a href="#" style="color:#e30613">kontakt@encom-lab.de</a>.</div><p class="help" style="margin-top:14px"><a href="#" data-reset>Zurück zum Formular (nur im Mockup)</a></p>';
+    if (S.sent) return '<div class="tl">Kontakt</div><h2>Sprechen Sie mit uns</h2><div class="thanks"><b>Vielen Dank!</b>Ihre Nachricht ist angekommen. Wir melden uns innerhalb eines Werktags.</div><p class="help" style="margin-top:14px"><a href="#" data-reset>Zurück zum Formular (nur im Mockup)</a></p>';
+    const shown = fields.filter((f) => f.s);
+    const wide = (k) => fields.find((f) => f.k === k).w === 'full';
+    return '<div class="tl">Kontakt</div><h2>Sprechen Sie mit uns</h2><p class="intro">Wir melden uns innerhalb eines Werktags.</p><form class="form" onsubmit="return false">' +
+      shown.map((f) => '<div class="ff' + (wide(f.k) ? ' full' : '') + (S.errors && f.r && f.k !== 'phone' ? ' bad' : '') + '"><label>' + f.l + (f.r ? ' <i>*</i>' : '') + '</label>' + (f.k === 'message' ? '<textarea></textarea>' : '<input type="' + (f.k === 'email' ? 'email' : f.k === 'phone' ? 'tel' : 'text') + '">') + (S.errors && f.r ? '<span class="err">Bitte ' + (f.k === 'email' ? 'eine gültige E-Mail-Adresse angeben' : f.l + ' ausfüllen') + '.</span>' : '') + '</div>').join('') +
+      '<label class="consent"><input type="checkbox"> <span>Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage gespeichert werden. Mehr in der <a href="#">Datenschutzerklärung</a>. <i style="color:#e30613;font-style:normal">*</i></span></label>' +
+      '<button class="btn" data-send>Nachricht senden</button></form>';
+  }
+  const notes = '<p><b>Spamschutz unsichtbar:</b> ein verstecktes Feld, das nur Bots ausfüllen, und eine Mindestzeit von 3 Sekunden zwischen Laden und Absenden. Kein Captcha, kein Dienst von Dritten. Bei Spam tut das Formular so, als sei alles angekommen.</p>' +
+    '<p><b>Nur SMTP:</b> der Block verschickt ausschließlich über einen echten Mailserver der Domain (z. B. das IONOS-Postfach website@…). Eingetragen im Project Wizard › Blöcke › Kontaktformular › Versand – reist mit den Inhalten auf Staging und Live, auch dorthin, wo das Panel aus ist. Ohne eingerichteten Mailserver sendet er nicht – Block und Project Wizard zeigen das rot, der Besucher bekommt die Fehlermeldung mit der Adresse zum direkten Schreiben (oben „Senden fehlgeschlagen“). Antwort-an ist immer der Besucher.</p>' +
+    '<p><b>Passwort verschlüsselt:</b> bei den Inhalten steht nur eine unlesbare Zeichenkette. Der Schlüssel liegt im Code (site/config, legt der Project Wizard beim ersten Sichern an) – erst Code und Inhalte zusammen, also der Server, können senden. Fehlt der Schlüssel auf einem Server, zeigt der Status „Passwort nicht lesbar – bitte neu eintragen“.</p><p><b>Nichts wird gespeichert:</b> Anfragen gehen nur per Mail raus. Kann eine Mail nicht verschickt werden, merkt die Website es sofort (SMTP meldet den Fehler) und sagt es dem Besucher.</p>';
+  const views = [['block', 'Block im Panel'], ['wizard', 'Project Wizard']];
+  const vb = document.getElementById('view');
+  views.forEach(([k, t]) => { const b = document.createElement('button'); b.textContent = t; b.dataset.k = k; b.onclick = () => { S.view = k; render(); }; vb.appendChild(b); });
+  [['Absenden', () => { S.sent = true; S.failed = false; S.errors = false; }], ['Fehler anzeigen', () => { S.errors = !S.errors; S.sent = false; S.failed = false; }], ['Senden fehlgeschlagen', () => { S.failed = true; S.sent = false; S.errors = false; }]].forEach(([t, f]) => { const b = document.createElement('button'); b.textContent = t; b.onclick = () => { f(); render(); }; vb.appendChild(b); });
+  document.addEventListener('click', (e) => {
+    const d = e.target.dataset;
+    if (d.tab) S.tab = d.tab;
+    else if (d.wtab) S.wtab = d.wtab;
+    else if (d.show !== undefined && !fields[+d.show].fix) { fields[+d.show].s = !fields[+d.show].s; }
+    else if (d.req !== undefined && !fields[+d.req].fix && fields[+d.req].s) fields[+d.req].r = !fields[+d.req].r;
+    else if (d.x) S[d.x] = !S[d.x];
+    else if (d.days) S.days = d.days;
+    else if (d.w !== undefined) fields[+d.w].w = d.wv;
+    else if (d.send !== undefined) { if (S.smtp) S.sent = true; else S.failed = true; S.errors = false; }
+    else if (d.reset !== undefined) { e.preventDefault(); S.sent = false; S.failed = false; }
+    else if (d.test !== undefined) S.tested = true;
+    else return;
+    render();
+  });
+  document.addEventListener('dragstart', (e) => { const r = e.target.closest('[data-row]'); if (r) { dragFrom = +r.dataset.row; r.style.opacity = '.4'; } });
+  document.addEventListener('dragover', (e) => { if (dragFrom !== null && e.target.closest('[data-row]')) e.preventDefault(); });
+  document.addEventListener('drop', (e) => { const r = e.target.closest('[data-row]'); if (r && dragFrom !== null) { e.preventDefault(); const to = +r.dataset.row; const [m] = fields.splice(dragFrom, 1); fields.splice(to, 0, m); dragFrom = null; render(); } });
+  document.addEventListener('dragend', () => { dragFrom = null; render(); });
+  function render() {
+    [...vb.children].forEach((b) => b.classList.toggle('on', b.dataset.k === S.view));
+    document.getElementById('left').innerHTML = S.view === 'block' ? block() : wizard();
+    document.getElementById('right').innerHTML = website();
+    document.getElementById('notes').innerHTML = notes;
+  }
+  render();
+</script>
+</body>
+</html>

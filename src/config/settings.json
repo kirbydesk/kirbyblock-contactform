@@ -1,0 +1,280 @@
+{
+	"tabs": {
+		"layout": true,
+		"style": true,
+		"grid": true,
+		"settings": true
+	},
+	"values": {
+		"items": {
+			"vars": {
+				"field-gap": {
+					"label": "kirbyblock-contactform.field-gap",
+					"value": "1rem",
+					"unit": "rem",
+					"step": 0.1,
+					"min": 0,
+					"max": 4
+				},
+				"field-padding": {
+					"label": "kirbyblock-contactform.field-padding",
+					"value": "0.75rem",
+					"unit": "rem",
+					"step": 0.05,
+					"min": 0,
+					"max": 2
+				},
+				"field-radius": {
+					"label": "kirbyblock-contactform.field-radius",
+					"value": "0.375rem",
+					"unit": "rem",
+					"step": 0.05,
+					"min": 0,
+					"max": 2
+				},
+				"field-border-width": {
+					"label": "kirbyblock-contactform.field-border-width",
+					"value": "1px",
+					"unit": "px",
+					"step": 1,
+					"min": 0,
+					"max": 4
+				},
+				"item-text-gap": {
+					"label": "kirbyblock-contactform.item-text-gap",
+					"value": "1.5rem",
+					"unit": "rem",
+					"step": 0.1,
+					"min": 0,
+					"max": 8
+				},
+				"tagline-spacing": {
+					"value": "0.5rem",
+					"unit": "rem",
+					"step": 0.1,
+					"min": 0,
+					"max": 6
+				},
+				"heading-spacing": {
+					"value": "0.5rem",
+					"unit": "rem",
+					"step": 0.1,
+					"min": 0,
+					"max": 6
+				},
+				"editor-spacing": {
+					"value": "1.2rem",
+					"unit": "rem",
+					"step": 0.1,
+					"min": 0,
+					"max": 6
+				},
+				"list-spacing": {
+					"value": "1em",
+					"unit": "em",
+					"step": 0.1,
+					"min": 0,
+					"max": 6
+				}
+			},
+			"colors": {
+				"field-background": {
+					"default": "#FAFAFA",
+					"variant": "#FFFFFF",
+					"variant2": "#FFFFFF",
+					"variant3": "#FFFFFF"
+				},
+				"field-border": {
+					"default": "#D4D4D8",
+					"variant": "#D4D4D8",
+					"variant2": "#FFFFFF40",
+					"variant3": "#FFFFFF40"
+				},
+				"field-text": {
+					"default": "#16171A",
+					"variant": "#16171A",
+					"variant2": "#16171A",
+					"variant3": "#16171A"
+				},
+				"field-focus": {
+					"default": "#2563EB",
+					"variant": "#2563EB",
+					"variant2": "#FFFFFF",
+					"variant3": "#FFFFFF"
+				}
+			}
+		}
+	},
+	"fields": {
+		"content": {
+			"tagline": {
+				"align": {
+					"options": [
+						"left",
+						"center",
+						"right"
+					],
+					"default": "left"
+				}
+			},
+			"heading": {
+				"align": {
+					"options": [
+						"left",
+						"center",
+						"right"
+					],
+					"default": "left"
+				},
+				"level": {
+					"options": [
+						"h1",
+						"h2",
+						"h3",
+						"h4"
+					],
+					"default": "h2"
+				},
+				"sizes": {
+					"options": [
+						"xs",
+						"sm",
+						"md",
+						"lg",
+						"xl",
+						"2xl",
+						"3xl"
+					],
+					"default": "lg"
+				},
+				"textbackground": {
+					"options": [
+						"disabled",
+						"enabled"
+					],
+					"default": "disabled"
+				},
+				"flourish": {
+					"options": [
+						"disabled",
+						"enabled"
+					],
+					"default": "disabled"
+				}
+			},
+			"editor": {
+				"mode": {
+					"options": [
+						"textarea",
+						"writer"
+					],
+					"default": "textarea"
+				},
+				"align": {
+					"options": [
+						"left",
+						"center",
+						"right",
+						"justify"
+					],
+					"default": "left"
+				},
+				"sizes": {
+					"options": [
+						"normal",
+						"lg",
+						"xl",
+						"2xl",
+						"3xl"
+					],
+					"default": "normal"
+				}
+			},
+			"blocks": {}
+		},
+		"layout": {
+			"padding": "enabled",
+			"padding-top": {
+				"default": "large"
+			},
+			"padding-bottom": {
+				"default": "large"
+			},
+			"padding-left": {
+				"default": true
+			},
+			"padding-right": {
+				"default": true
+			},
+			"radius": "enabled",
+			"radius-top-left": {
+				"default": false
+			},
+			"radius-top-right": {
+				"default": false
+			},
+			"radius-bottom-left": {
+				"default": false
+			},
+			"radius-bottom-right": {
+				"default": false
+			}
+		},
+		"style": {
+			"theme": {
+				"options": [
+					"default",
+					"variant",
+					"variant2",
+					"variant3",
+					"custom"
+				],
+				"required": true,
+				"default": "default"
+			}
+		},
+		"grid": {
+			"grid-size-sm": {
+				"default": 12
+			},
+			"grid-size-md": {
+				"default": 12
+			},
+			"grid-size-lg": {
+				"default": 12
+			},
+			"grid-size-xl": {
+				"default": 12
+			},
+			"grid-offset-sm": {
+				"default": 0
+			},
+			"grid-offset-md": {
+				"default": 0
+			},
+			"grid-offset-lg": {
+				"default": 0
+			},
+			"grid-offset-xl": {
+				"default": 0
+			}
+		},
+		"settings": {
+			"block-size": {
+				"options": [
+					"content",
+					"fullscreen"
+				],
+				"required": true,
+				"fixed": true,
+				"default": "content"
+			},
+			"margin-top": {
+				"default": false
+			},
+			"margin-bottom": {
+				"default": true
+			}
+		}
+	}
+}

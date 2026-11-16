@@ -1,0 +1,27 @@
+{
+	"name": "kirbydesk/kirbyblock-contactform",
+	"version": "1.0.0",
+	"description": "Contact Form Block for Kirby CMS",
+	"type": "kirby-plugin",
+	"keywords": [
+		"kirby",
+		"kirby-plugin"
+	],
+	"license": "proprietary",
+	"homepage": "https://github.com/kirbydesk/kirbyblock-contactform",
+	"authors": [
+		{
+			"name": "Christian Fickinger",
+      "email": "hello@kirbydesk.com",
+      "homepage": "https://kirbydesk.com"
+		}
+	],
+	"extra": {
+		"installer-name": "kirbyblock-contactform"
+	},
+	"require": {
+		"getkirby/composer-installer": "^1.2",
+		"kirbydesk/kirby-pagewizard": "^1.5.1",
+		"kirbydesk/kirby-projectwizard": "^1.7.0"
+	}
+}
