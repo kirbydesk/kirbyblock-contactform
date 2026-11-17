@@ -4,11 +4,11 @@ use Kirby\Cms\Page;
 use Kirby\Toolkit\V;
 
 /**
- * The contact form: its fields, the mail server (Project Wizard → Blocks ›
- * Contact form › Sending) and sending a request by SMTP – nothing is
- * stored. The settings travel with the content
- * (content/.projectwizard/contactform.json); the password only encrypted,
- * its key lives with the code (site/config/contactform.key).
+ * The contact form: its fields and sending a request – nothing is stored.
+ * It sends through the project's mail server (kirby-projectwizard's
+ * pwMail, Project Wizard › Settings › Sending). The contact form's own mail
+ * server from before (content/.projectwizard/contactform.json) is taken
+ * over once.
  */
 class pwContactForm
 {
@@ -22,107 +22,39 @@ class pwContactForm
 		'message' => [true, true, 'full'],
 	];
 
-	/** The mail server's settings with their start values (the password apart) */
-	public const SETTINGS = [
-		'recipient' => '',
-		'host'      => '',
-		'port'      => '587',
-		'security'  => 'tls',     // tls (STARTTLS) or ssl
-		'username'  => '',
-		'sender'    => '',
-	];
-
 	/** Seconds a person needs at least between loading and sending */
 	public const MIN_SECONDS = 3;
 
-	/* -------------- Settings --------------*/
+	/* -------------- The mail server: the project's --------------*/
 
-	public static function settingsFile(): string
-	{
-		return pwConfig::projectDir() . '/contactform.json';
-	}
-
-	private static function stored(): array
-	{
-		$file = self::settingsFile();
-		$data = is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
-		return is_array($data) ? $data : [];
-	}
-
-	/** The settings for the Panel – never the password, only whether it's there and readable */
-	public static function settings(): array
-	{
-		$stored = self::stored();
-		$settings = array_merge(self::SETTINGS, array_intersect_key($stored, self::SETTINGS));
-		$hasPassword = !empty($stored['password']);
-		$settings['password'] = $hasPassword ? (self::password() !== null ? 'stored' : 'unreadable') : 'none';
-		$settings['ready'] = self::ready();
-		return $settings;
-	}
-
-	/** Changes from the Panel: a password given is stored encrypted, an empty one keeps the stored */
-	public static function save(array $changes): void
-	{
-		$stored = self::stored();
-		foreach (self::SETTINGS as $key => $default) {
-			if (array_key_exists($key, $changes)) $stored[$key] = trim((string) $changes[$key]);
-		}
-		// (none: only for a local test server – the Project Wizard offers STARTTLS and SSL/TLS)
-		if (!in_array($stored['security'] ?? 'tls', ['tls', 'ssl', 'none'], true)) $stored['security'] = 'tls';
-		if (isset($changes['password']) && $changes['password'] !== '') {
-			$stored['password'] = self::encrypt((string) $changes['password']);
-		}
-		if (!empty($changes['removePassword'])) unset($stored['password']);
-		// (the start values are not stored)
-		$stored = array_filter($stored, fn ($value, $key) => !(isset(self::SETTINGS[$key]) && $value === self::SETTINGS[$key]), ARRAY_FILTER_USE_BOTH);
-		$file = self::settingsFile();
-		if (!is_dir(dirname($file))) mkdir(dirname($file), 0755, true);
-		file_put_contents($file, json_encode($stored, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-	}
-
-	/** Everything there to send: server, user, sender and a readable password */
+	/** The project's mail server set up (the old settings taken over first) */
 	public static function ready(): bool
 	{
-		$s = array_merge(self::SETTINGS, self::stored());
-		return $s['host'] !== '' && $s['username'] !== '' && $s['sender'] !== '' && self::password() !== null;
+		if (!class_exists('pwMail')) return false;
+		self::migrate();
+		return pwMail::ready();
 	}
 
-	/* -------------- The password, encrypted --------------*/
-
-	/** The key with the code: made on the first save in the Panel */
-	private static function keyFile(): string
+	/** Where the requests go without a recipient in the block */
+	public static function recipients(): array
 	{
-		return kirby()->root('config') . '/contactform.key';
+		return class_exists('pwMail') ? pwMail::recipient() : [];
 	}
 
-	private static function key(bool $create = false): ?string
+	/**
+	 * The contact form's own mail server (up to 1.0): its settings and the
+	 * encrypted password go to the project's once – where nothing is set
+	 * there yet – then the old file is gone
+	 */
+	public static function migrate(): void
 	{
-		$file = self::keyFile();
-		if (is_file($file)) {
-			$key = base64_decode(trim((string) file_get_contents($file)), true);
-			if ($key !== false && strlen($key) === SODIUM_CRYPTO_SECRETBOX_KEYBYTES) return $key;
+		$file = pwConfig::projectDir() . '/contactform.json';
+		if (!is_file($file) || !class_exists('pwMail') || !method_exists('pwMail', 'adopt')) return;
+		$old = json_decode((string) file_get_contents($file), true);
+		if (is_array($old)) {
+			pwMail::adopt($old, isset($old['password']) ? (string) $old['password'] : null);
 		}
-		if (!$create) return null;
-		$key = sodium_crypto_secretbox_keygen();
-		file_put_contents($file, base64_encode($key) . "\n");
-		return $key;
-	}
-
-	private static function encrypt(string $plain): string
-	{
-		$nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-		return base64_encode($nonce . sodium_crypto_secretbox($plain, $nonce, self::key(true)));
-	}
-
-	/** The password – null without one or when it can't be read (no key on this server) */
-	private static function password(): ?string
-	{
-		$stored = self::stored()['password'] ?? '';
-		$key = self::key();
-		$raw = $stored !== '' ? base64_decode($stored, true) : false;
-		if ($raw === false || $key === null || strlen($raw) <= SODIUM_CRYPTO_SECRETBOX_NONCEBYTES) return null;
-		$plain = sodium_crypto_secretbox_open(substr($raw, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES), substr($raw, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES), $key);
-		return $plain === false ? null : $plain;
+		@unlink($file);
 	}
 
 	/* -------------- The block's fields --------------*/
@@ -181,7 +113,7 @@ class pwContactForm
 
 	private static function stampSecret(): string
 	{
-		return hash('sha256', kirby()->root('index') . '|' . (string) (self::key() !== null ? base64_encode(self::key()) : __FILE__));
+		return hash('sha256', kirby()->root('index') . '|' . kirby()->root('config') . '|' . __FILE__);
 	}
 
 	private static function isSpam(array $data): bool
@@ -251,30 +183,14 @@ class pwContactForm
 		return ['status' => 'sent'];
 	}
 
-	/** The SMTP transport for Kirby's email() */
-	private static function transport(): array
-	{
-		$s = array_merge(self::SETTINGS, self::stored());
-		return [
-			'type'     => 'smtp',
-			'host'     => $s['host'],
-			'port'     => (int) ($s['port'] ?: 587),
-			'security' => ['ssl' => 'ssl', 'none' => false][$s['security']] ?? 'tls',
-			'auth'     => $s['security'] !== 'none',
-			'username' => $s['username'],
-			'password' => (string) self::password(),
-		];
-	}
-
 	private static function send(Page $page, array $block, array $fields, array $values): void
 	{
 		if (!self::ready()) throw new \Exception('No mail server');
-		$s = array_merge(self::SETTINGS, self::stored());
 		$site = site()->title()->value();
 
-		// the request: to the block's recipients, else the website's
-		$to = trim((string) ($block['recipient'] ?? '')) ?: $s['recipient'] ?: $s['sender'];
-		$recipients = array_values(array_filter(array_map('trim', explode(',', $to)), fn ($a) => V::email($a)));
+		// the request: to the block's recipients, else the project's
+		$recipients = class_exists('pwMail') ? pwMail::addresses(trim((string) ($block['recipient'] ?? ''))) : [];
+		if ($recipients === []) $recipients = self::recipients();
 		if ($recipients === []) throw new \Exception('No recipient');
 
 		$lines = [];
@@ -287,28 +203,21 @@ class pwContactForm
 		$subject = trim((string) ($block['mailsubject'] ?? '')) ?: tt('kirbyblock-contactform.mail.subject.default', null, ['site' => $site]);
 		$subject = self::fill($subject, $values);
 
-		kirby()->email([
-			'transport' => self::transport(),
-			'from'      => $s['sender'],
-			'fromName'  => $site,
-			'replyTo'   => $values['email'],
-			'to'        => $recipients,
-			'subject'   => trim($subject, " :–-"),
-			'body'      => implode("\n", $lines),
+		pwMail::send([
+			'replyTo' => $values['email'],
+			'to'      => $recipients,
+			'subject' => trim($subject, " :–-"),
+			'body'    => implode("\n", $lines),
 		]);
 
 		// the confirmation to the visitor: the block's text and a copy
 		if (self::bool($block['confirm'] ?? false)) {
-			$text = trim((string) ($block['confirmtext'] ?? ''));
-			$text = self::fill($text, $values);
-			kirby()->email([
-				'transport' => self::transport(),
-				'from'      => $s['sender'],
-				'fromName'  => $site,
-				'replyTo'   => $recipients[0],
-				'to'        => $values['email'],
-				'subject'   => tt('kirbyblock-contactform.mail.confirm.subject', null, ['site' => $site]),
-				'body'      => $text . "\n\n" . t('kirbyblock-contactform.mail.confirm.copy') . "\n\n" . implode("\n", array_slice($lines, 0, -2)),
+			$text = self::fill(trim((string) ($block['confirmtext'] ?? '')), $values);
+			pwMail::send([
+				'replyTo' => $recipients[0],
+				'to'      => $values['email'],
+				'subject' => tt('kirbyblock-contactform.mail.confirm.subject', null, ['site' => $site]),
+				'body'    => $text . "\n\n" . t('kirbyblock-contactform.mail.confirm.copy') . "\n\n" . implode("\n", array_slice($lines, 0, -2)),
 			]);
 		}
 	}
@@ -317,25 +226,5 @@ class pwContactForm
 	private static function fill(string $text, array $values): string
 	{
 		return preg_replace_callback('/\{\{?\s*(name|subject)\s*\}?\}/', fn ($m) => $values[$m[1]] ?? '', $text);
-	}
-
-	/** Project Wizard: a test mail to the logged-in user – the server's answer on failure */
-	public static function test(string $to): ?string
-	{
-		if (!self::ready()) return t('kirbyblock-contactform.settings.notReady');
-		$s = array_merge(self::SETTINGS, self::stored());
-		try {
-			kirby()->email([
-				'transport' => self::transport(),
-				'from'      => $s['sender'],
-				'fromName'  => site()->title()->value(),
-				'to'        => $to,
-				'subject'   => t('kirbyblock-contactform.mail.test.subject'),
-				'body'      => t('kirbyblock-contactform.mail.test.body'),
-			]);
-		} catch (\Throwable $e) {
-			return $e->getMessage();
-		}
-		return null;
 	}
 }

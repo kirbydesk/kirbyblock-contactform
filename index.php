@@ -14,8 +14,12 @@ require_once __DIR__ . '/src/classes/ContactForm.php';
 pwConfig::register('pwcontactform', __DIR__ . '/src/config');
 
 Kirby::plugin('kirbydesk/kirbyblock-contactform', [
+	/* -------------- Options --------------*/
+	// sends mails: the Project Wizard shows Settings › Sending
+	'options' => [
+		'mail' => true,
+	],
 	/* -------------- Extensions --------------*/
-	'api' => require_once 'src/extensions/api.php',
 	'blueprints' => require_once 'src/extensions/blueprints.php',
 	'routes' => require_once 'src/extensions/routes.php',
 	'snippets' => require_once 'src/extensions/snippets.php',

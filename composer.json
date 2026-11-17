@@ -1,6 +1,6 @@
 {
 	"name": "kirbydesk/kirbyblock-contactform",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"description": "Contact Form Block for Kirby CMS",
 	"type": "kirby-plugin",
 	"keywords": [
@@ -22,6 +22,6 @@
 	"require": {
 		"getkirby/composer-installer": "^1.2",
 		"kirbydesk/kirby-pagewizard": "^1.5.1",
-		"kirbydesk/kirby-projectwizard": "^1.7.0"
+		"kirbydesk/kirby-projectwizard": "^1.9.0"
 	}
 }

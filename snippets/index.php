@@ -44,7 +44,7 @@ if ($status === 'sent'):
 
 else:
 	if ($status === 'failed'):
-		$recipient = pwContactForm::settings()['recipient'] ?: pwContactForm::settings()['sender'];
+		$recipient = pwContactForm::recipients()[0] ?? '';
 		echo '<div data-contactform-message="failed" role="alert">' . kirbytext(tt('kirbyblock-contactform.failed', null, ['email' => esc($recipient)])) . '</div>' . "\n";
 	endif;
 

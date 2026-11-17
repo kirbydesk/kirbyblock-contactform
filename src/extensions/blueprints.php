@@ -92,7 +92,7 @@ return [
 							'recipient' => [
 								'label'       => 'kirbyblock-contactform.recipient',
 								'type'        => 'text',
-								'placeholder' => pwContactForm::settings()['recipient'] ?: null,
+								'placeholder' => implode(', ', pwContactForm::recipients()) ?: null,
 								'help'        => 'kirbyblock-contactform.recipient.help',
 							],
 							'mailSubject' => [
