@@ -15,9 +15,9 @@ pwConfig::register('pwcontactform', __DIR__ . '/src/config');
 
 Kirby::plugin('kirbydesk/kirbyblock-contactform', [
 	/* -------------- Options --------------*/
-	// sends mails: the Project Wizard shows Settings › Sending
+	// sends mails – as an active block: the Project Wizard shows Settings › Sending
 	'options' => [
-		'mail' => true,
+		'mail' => fn () => class_exists('ProjectConfig') && in_array('pwcontactform', ProjectConfig::activeBlocks(), true),
 	],
 	/* -------------- Extensions --------------*/
 	'blueprints' => require_once 'src/extensions/blueprints.php',
